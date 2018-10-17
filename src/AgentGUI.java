@@ -8,6 +8,9 @@ import java.awt.event.WindowEvent;
 import java.util.ArrayList;
 
 public class AgentGUI extends JFrame {
+    private static int TEXT_FIELD_HEIGHT = 30;
+    private static int LABEL_HEIGHT = 30;
+    private static int LABEL_WIDTH = 400;
     private CommunicationAgent CommunicationAgent;
     String messageType = "";
 
@@ -20,7 +23,7 @@ public class AgentGUI extends JFrame {
     JPanel controlPanel;
     JButton sendMessageBtn;
     Font font = new Font("Arial", Font.PLAIN, 14);
-    JLabel messageContentLabel, SentMessagesLabel, RecvdMessagesLabel, TypeLable, receiverLabel;
+    JLabel messageContentLabel, sentMessagesLabel, receivedMessagesLabel, typeLabel, receiverLabel;
 
     ArrayList<String> msgTypesList;
     ArrayList<String> rcvrList;
@@ -49,84 +52,80 @@ public class AgentGUI extends JFrame {
         JScrollPane scrollPaneConversation = new JScrollPane(messageViewerConversation);
 
         messageTypes = new JComboBox(msgTypesList.toArray());
-        messageTypes.setPreferredSize(new Dimension(400,20));
+        messageTypes.setPreferredSize(new Dimension(400,TEXT_FIELD_HEIGHT));
 
-        TypeLable  = new JLabel("Message Type: ");
-        TypeLable.setPreferredSize(new Dimension(400, 20));
+        typeLabel = new JLabel("Message Type: ");
+        typeLabel.setPreferredSize(new Dimension(LABEL_WIDTH , LABEL_HEIGHT));
 
         receiverLabel = new JLabel("Receivers: ");
-        receiverLabel.setPreferredSize(new Dimension(400, 20));
+        receiverLabel.setPreferredSize(new Dimension(LABEL_WIDTH, LABEL_HEIGHT));
 
         messageContentLabel = new JLabel("Content: ");
-        messageContentLabel.setPreferredSize(new Dimension(400, 20));
+        messageContentLabel.setPreferredSize(new Dimension(LABEL_WIDTH, LABEL_HEIGHT));
 
         conversationLabel = new JLabel("Conversation: ");
-        conversationLabel.setPreferredSize(new Dimension(400, 20));
+        conversationLabel.setPreferredSize(new Dimension(LABEL_WIDTH, LABEL_HEIGHT));
 
         sendMessageBtn = new JButton("Send");
-        sendMessageBtn.setPreferredSize(new Dimension(200, 50));
+        sendMessageBtn.setPreferredSize(new Dimension(100, 30));
 
         headerLabel = new JLabel("",JLabel.CENTER );
         statusLabel = new JLabel("",JLabel.CENTER);
 
         updateRcvrDropDown();
         receivers = new JComboBox(rcvrList.toArray());
-        receivers.setPreferredSize(new Dimension(400, 30));
-		
-		/*Timer t = new Timer();
-		t.schedule(new TimerTask() {
-		    @Override
-		    public void run() {
-		       updateRcvrDropDown();
-		    }
-		}, 0, 5000); */
+        receivers.setPreferredSize(new Dimension(400, 40));
+
+        sentMessagesLabel = new JLabel("Sent Messages: ");
+        sentMessagesLabel.setPreferredSize(new Dimension(LABEL_WIDTH, LABEL_HEIGHT));
+
+        receivedMessagesLabel = new JLabel("Received Messages: ");
+        receivedMessagesLabel.setPreferredSize(new Dimension(LABEL_WIDTH, LABEL_HEIGHT));
+
+        messageSentViewer = new JTextArea(5, 45);
+        messageSentViewer.setEditable(false);
+        messageSentViewer.setFont(font);
+        JScrollPane scrollPaneSent = new JScrollPane(messageSentViewer);
+
+        messageRecvdViewer = new JTextArea(5, 45);
+        messageRecvdViewer.setEditable(false);
+        messageRecvdViewer.setFont(font);
+        JScrollPane scrollPaneRecvd = new JScrollPane(messageRecvdViewer);
+
 
         controlPanel = new JPanel();
-        controlPanel.add(TypeLable);
+        controlPanel.add(typeLabel);
         controlPanel.add(messageTypes);
         controlPanel.add(messageContent);
         controlPanel.add(receiverLabel);
         controlPanel.add(receivers);
         controlPanel.add(messageContentLabel);
         controlPanel.add(messageContent);
-        controlPanel.add(conversationLabel);
-        controlPanel.add(scrollPaneConversation);
+        //controlPanel.add(conversationLabel);
+        //controlPanel.add(scrollPaneConversation);
+        controlPanel.add(sentMessagesLabel);
+        controlPanel.add(scrollPaneSent);
+        controlPanel.add(receivedMessagesLabel);
+        controlPanel.add(scrollPaneRecvd);
         controlPanel.add(sendMessageBtn);
 
         Container contentPane = getContentPane();
         contentPane.setPreferredSize(new Dimension(500, 600));
         getContentPane().add(controlPanel, BorderLayout.CENTER);
 
-        SentMessagesLabel = new JLabel("Sent Messages: ");
-        SentMessagesLabel.setPreferredSize(new Dimension(400, 20));
-
-        RecvdMessagesLabel = new JLabel("Received Messages: ");
-        RecvdMessagesLabel.setPreferredSize(new Dimension(400, 20));
-
-        messageSentViewer = new JTextArea(25, 45);
-        messageSentViewer.setEditable(false);
-        messageSentViewer.setFont(font);
-        JScrollPane scrollPaneSent = new JScrollPane(messageSentViewer);
-
-        messageRecvdViewer = new JTextArea(25, 45);
-        messageRecvdViewer.setEditable(false);
-        messageRecvdViewer.setFont(font);
-        JScrollPane scrollPaneRecvd = new JScrollPane(messageRecvdViewer);
-
-
-        JPanel sentMsgs = new JPanel();
-        sentMsgs.add(SentMessagesLabel);
+        /*JPanel sentMsgs = new JPanel();
+        sentMsgs.add(sentMessagesLabel);
         sentMsgs.add(scrollPaneSent);
 
         JPanel receivedMsgs = new JPanel();
-        receivedMsgs.add(RecvdMessagesLabel);
-        receivedMsgs.add(scrollPaneRecvd);
+        receivedMsgs.add(receivedMessagesLabel);
+        receivedMsgs.add(scrollPaneRecvd);*/
 
         JTabbedPane jtp = new JTabbedPane();
         getContentPane().add(jtp);
         jtp.addTab("Conversation", controlPanel);
-        jtp.addTab("Sent", sentMsgs);
-        jtp.addTab("Received", receivedMsgs);
+        //jtp.addTab("Sent", sentMsgs);
+        //jtp.addTab("Received", receivedMsgs);
 
         addWindowListener(new WindowAdapter() {
             public void windowClosing(WindowEvent e) {
