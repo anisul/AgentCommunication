@@ -21,14 +21,12 @@ public class CommunicationAgent extends GuiAgent {
     private AgentGUI gui;
     private String receiverName = "";
     private String msgContent = "";
-    private String messagePerformative="";
-    private String fullConversationText = ""; // all the conversations will be appended here
+    private String messagePerformative= "";
+    private String fullConversationText = "";
     public ArrayList<String> agentList;
-    public static int agentCounterInitial = 0;
-    public static int agentCounterFinal = 0;
 
     protected void setup() {
-        System.out.println("Messenger agent "+getAID().getName()+" is ready.");
+        System.out.println("Messenger agent "+ getAID().getAddressesArray()[0] + "--" + getAID().getName()+" is ready.");
 
         agentList	=	new ArrayList();
 
@@ -70,7 +68,6 @@ public class CommunicationAgent extends GuiAgent {
     }
 
 
-    //Agent clean-up
     protected void takeDown() {
         if (gui != null) {
             gui.dispose();
@@ -102,7 +99,13 @@ public class CommunicationAgent extends GuiAgent {
                 msg = new ACLMessage(ACLMessage.AGREE);
             }
 
-            msg.addReceiver(new AID(receiverName, AID.ISLOCALNAME));
+            AID aid = new AID();
+            //xx set <receiver agentName>@<private IP of receiver agent>:1099/JADE
+            aid.setName("TWO@172.31.21.127:1099/JADE");
+            //xx put private DNS of receiver
+            aid.addAddresses("http://ip-172-31-21-127.eu-west-1.compute.internal:7778/acc");
+            msg.addReceiver(aid);
+
             msg.setLanguage("English");
             msg.setContent(msgContent);
             send(msg);
@@ -145,26 +148,36 @@ public class CommunicationAgent extends GuiAgent {
 
 
     public void refreshActiveAgents(){
-        AMSAgentDescription[] agents = null;
+        //clearing list in GUI
         agentList.clear();
+
+        DFAgentDescription template = new DFAgentDescription();
+
+        AID otherPlatform = new AID();
+        //xx df@<private IP of receiver>:1099/JADE
+        otherPlatform.setName("df@172.31.21.127:1099/JADE");
+        //xx http://<private IP of receiver:7778/acc>
+        otherPlatform.addAddresses("http://ip-172-31-21-127.eu-west-1.compute.internal:7778/acc");
+
+        ServiceDescription sd = new ServiceDescription();
+        sd.setType("messenger-agent");
+
+        template.addServices(sd);
+        //template.setName(otherPlatform);
+
         try {
-            SearchConstraints searchConstraints = new SearchConstraints();
-            searchConstraints.setMaxResults ( new Long(-1) );
-            agents = AMSService.search( this, new AMSAgentDescription (), searchConstraints );
-        }
-        catch (Exception e) {
-            e.printStackTrace();
-        }
-        for (int i=0; i<agents.length;i++){
-            AID agentID = agents[i].getName();
-            if(!agentID.getLocalName().equals("ams") && !agentID.getLocalName().equals("rma") && !agentID.getLocalName().equals("df"))
+            DFAgentDescription[] result = DFService.search(this, otherPlatform, template);
+            for (int i = 0; i < result.length; i++) {
+                AID agentID = result[i].getName();
                 agentList.add(agentID.getLocalName());
+            }
+        } catch (FIPAException e) {
+            e.printStackTrace();
         }
     }
 
     @Override
     protected void onGuiEvent(GuiEvent arg0) {
-        // TODO Auto-generated method stub
         addBehaviour(new SendMsg());
     }
 }

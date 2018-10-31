@@ -138,7 +138,7 @@ public class AgentGUI extends JFrame {
                 try {
                     String content = messageContent.getText().trim();
                     messageType = messageTypes.getSelectedItem().toString();
-                    CommunicationAgent.messageData(messageType, receivers.getSelectedItem().toString(), content);
+                    CommunicationAgent.messageData(messageType, "", content);
                     messageContent.setText("");
                     GuiEvent guiEvent = new GuiEvent(this, 1);
                     CommunicationAgent.postGuiEvent(guiEvent);
